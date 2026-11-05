@@ -1,0 +1,547 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+/* =========================================
+   1. DESIGN SYSTEM (HIGH-CONTRAST DARK LUXURY)
+========================================= */
+
+:root {
+    /* Color Palette */
+    --luxury-bg: #0d0d0d;             /* Pitch black canvas */
+    --luxury-surface: #181818;        /* Dark sleek card backdrop */
+    --luxury-surface-light: #222222;  /* Elevated surface */
+    --luxury-white: #ffffff;
+    
+    --luxury-text: #f4f4f5;           /* Crisp bright off-white */
+    --luxury-muted: #a1a1aa;          /* Cool grey text */
+
+    --luxury-sage: #ff6b35;           /* High-contrast electric accent */
+    --luxury-sage-dark: #e0531f;      /* Darker orange/bronze hover */
+
+    --luxury-border: #27272a;         /* Sharp subtle hairline border */
+    --luxury-border-focus: #ff6b35;
+
+    /* Typography */
+    --luxury-heading: 'Playfair Display', Georgia, serif;
+    --luxury-font: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+    /* Geometry */
+    --luxury-container: 1320px;
+    --luxury-radius: 4px;
+
+    /* Transitions */
+    --ease-luxury: cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-fast: 0.2s var(--ease-luxury);
+    --transition-smooth: 0.5s var(--ease-luxury);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 100px;
+}
+
+body.storefront,
+.storefront {
+    margin: 0;
+    background: var(--luxury-bg) !important;
+    color: var(--luxury-text) !important;
+    font-family: var(--luxury-font);
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+.storefront img {
+    display: block;
+    max-width: 100%;
+}
+
+.storefront a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.storefront button,
+.storefront input,
+.storefront select,
+.storefront textarea {
+    font: inherit;
+}
+
+.store-container {
+    width: min(calc(100% - 48px), var(--luxury-container));
+    margin-inline: auto;
+}
+
+
+/* =========================================
+   2. ANNOUNCEMENT BAR
+========================================= */
+
+.brutal-announcement {
+    padding: 10px 16px;
+    background: #000000;
+    color: var(--luxury-sage);
+    text-align: center;
+    border-bottom: 1px solid var(--luxury-border);
+}
+
+.brutal-announcement p {
+    margin: 0;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+}
+
+
+/* =========================================
+   3. STICKY NAVIGATION BAR
+========================================= */
+
+.brutal-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13, 13, 13, 0.92) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--luxury-border) !important;
+}
+
+.brutal-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    min-height: 80px;
+    padding: 0 4%;
+}
+
+.brutal-logo {
+    color: var(--luxury-white) !important;
+    font-family: var(--luxury-heading);
+    font-size: clamp(24px, 2.5vw, 32px);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    white-space: nowrap;
+    transition: color var(--transition-fast);
+}
+
+.brutal-logo:hover {
+    color: var(--luxury-sage) !important;
+}
+
+.brutal-nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 36px;
+}
+
+.brutal-nav-links a,
+.brutal-nav-actions a {
+    position: relative;
+    color: var(--luxury-muted) !important;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: color var(--transition-fast);
+}
+
+.brutal-nav-links a:hover,
+.brutal-nav-actions a:hover {
+    color: var(--luxury-white) !important;
+}
+
+.brutal-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.brutal-cart-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--luxury-white) !important;
+}
+
+.brutal-cart-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 50%;
+    background: var(--luxury-sage);
+    color: var(--luxury-white);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+
+/* =========================================
+   4. HERO SECTION
+========================================= */
+
+.brutal-hero {
+    display: grid;
+    grid-template-columns: 0.95fr 1.05fr;
+    align-items: center;
+    gap: clamp(32px, 5vw, 80px);
+    padding-block: clamp(50px, 8vw, 95px);
+}
+
+.brutal-hero-copy {
+    max-width: 540px;
+}
+
+.brutal-kicker {
+    display: inline-block;
+    margin-bottom: 18px;
+    color: var(--luxury-sage);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.brutal-heading {
+    margin: 0 0 24px;
+    color: var(--luxury-white);
+    font-family: var(--luxury-heading);
+    font-size: clamp(42px, 5.5vw, 76px);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -1.5px;
+}
+
+.editorial-sub {
+    font-family: var(--luxury-heading);
+    font-style: italic;
+    color: var(--luxury-sage);
+}
+
+.brutal-hero-copy p {
+    max-width: 440px;
+    margin: 0 0 34px;
+    color: var(--luxury-muted);
+    font-size: 14px;
+    line-height: 1.85;
+}
+
+.brutal-hero-image {
+    position: relative;
+    overflow: hidden;
+    background: var(--luxury-surface);
+    border: 1px solid var(--luxury-border);
+    border-radius: var(--luxury-radius);
+}
+
+.brutal-hero-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 480px;
+    object-fit: cover;
+    transition: transform var(--transition-smooth);
+}
+
+.brutal-hero-image:hover img {
+    transform: scale(1.04);
+}
+
+
+/* =========================================
+   5. BUTTONS (FIXED - NO VANISHING TEXT)
+========================================= */
+
+.brutal-button {
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 0 30px;
+
+    border: 1px solid var(--luxury-sage) !important;
+    border-radius: var(--luxury-radius);
+
+    background: var(--luxury-sage) !important;
+    color: var(--luxury-white) !important;
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+
+    cursor: pointer;
+    transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease !important;
+}
+
+.brutal-button:hover {
+    background: var(--luxury-white) !important;
+    border-color: var(--luxury-white) !important;
+    color: #000000 !important; /* Text turns dark black on white background */
+}
+
+/* Card Specific Buttons */
+.brutal-product-info .brutal-button {
+    width: 100%;
+    margin-top: 10px;
+    border-color: var(--luxury-border) !important;
+    background: transparent !important;
+    color: var(--luxury-text) !important;
+}
+
+.brutal-product-info .brutal-button:hover {
+    border-color: var(--luxury-sage) !important;
+    background: var(--luxury-sage) !important;
+    color: var(--luxury-white) !important; /* Text turns crisp white on orange background */
+}
+
+
+/* =========================================
+   6. VALUE PROPOSITIONS & BENEFITS
+========================================= */
+
+.brutal-benefits {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-block: 1px solid var(--luxury-border);
+    background: var(--luxury-surface);
+}
+
+.brutal-benefit {
+    padding: 30px 20px;
+    text-align: center;
+}
+
+.brutal-benefit + .brutal-benefit {
+    border-left: 1px solid var(--luxury-border);
+}
+
+.brutal-benefit strong {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--luxury-white);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.brutal-benefit span {
+    color: var(--luxury-muted);
+    font-size: 12px;
+}
+
+
+/* =========================================
+   7. PRODUCT CARDS & GRID
+========================================= */
+
+.brutal-products-section,
+.brutal-section {
+    padding-block: clamp(60px, 7vw, 95px);
+}
+
+.brutal-product-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 30px 20px;
+}
+
+.brutal-product-card {
+    position: relative;
+    overflow: hidden;
+    background: var(--luxury-surface) !important;
+    border: 1px solid var(--luxury-border) !important;
+    border-radius: var(--luxury-radius);
+    transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.brutal-product-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--luxury-sage) !important;
+}
+
+.brutal-product-image {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    background: #121212;
+}
+
+.brutal-product-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-smooth);
+}
+
+.brutal-product-card:hover .brutal-product-image img {
+    transform: scale(1.05);
+}
+
+.brutal-product-label {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    z-index: 2;
+    padding: 6px 12px;
+    background: rgba(13, 13, 13, 0.88);
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--luxury-border);
+    color: var(--luxury-white);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.brutal-product-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 20px;
+}
+
+.brutal-product-category {
+    color: var(--luxury-sage);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.brutal-product-name {
+    margin: 0;
+    color: var(--luxury-white) !important;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.brutal-product-name a {
+    color: var(--luxury-white) !important;
+}
+
+.brutal-product-price {
+    margin-top: 2px;
+    color: var(--luxury-white);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.brutal-product-price del {
+    margin-left: 8px;
+    color: var(--luxury-muted);
+    font-size: 12px;
+    font-weight: 400;
+}
+
+
+/* =========================================
+   8. FORM CONTROLS & INPUTS
+========================================= */
+
+.storefront input,
+.storefront select,
+.storefront textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--luxury-border) !important;
+    border-radius: var(--luxury-radius);
+    background: var(--luxury-surface-light) !important;
+    color: var(--luxury-white) !important;
+}
+
+.storefront input:focus,
+.storefront select:focus,
+.storefront textarea:focus {
+    border-color: var(--luxury-sage) !important;
+    outline: none;
+}
+
+
+/* =========================================
+   9. CATEGORY CARDS
+========================================= */
+
+.brutal-category-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.brutal-category-card {
+    display: flex;
+    min-height: 160px;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 24px;
+    border: 1px solid var(--luxury-border);
+    border-radius: var(--luxury-radius);
+    background: var(--luxury-surface);
+    color: var(--luxury-white);
+    font-family: var(--luxury-heading);
+    font-size: 22px;
+    transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.brutal-category-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--luxury-sage);
+}
+
+
+/* =========================================
+   10. FOOTER
+========================================= */
+
+.brutal-footer {
+    padding: 60px 4% 30px;
+    border-top: 1px solid var(--luxury-border);
+    background: #050505;
+    color: var(--luxury-muted);
+}
+
+.brutal-footer a {
+    color: var(--luxury-sage);
+}
+
+.brutal-footer a:hover {
+    color: var(--luxury-white);
+}
+
+
+/* =========================================
+   11. RESPONSIVENESS
+========================================= */
+
+@media (max-width: 1024px) {
+    .brutal-product-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .brutal-hero {
+        grid-template-columns: 1fr;
+    }
+
+    .brutal-product-grid,
+    .brutal-category-grid,
+    .brutal-benefits {
+        grid-template-columns: 1fr;
+    }
+}
