@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -221,7 +222,9 @@ class CartControllerTest extends TestCase
             'is_active' => true,
         ]);
 
-        $response = $this->withSession([
+        $user = User::factory()->create(['name' => 'Sam Shopper', 'email' => 'sam@example.com']);
+
+        $response = $this->actingAs($user)->withSession([
             'cart' => [
                 $product->id.':'.$variant->id => [
                     'product_id' => $product->id,
@@ -277,7 +280,9 @@ class CartControllerTest extends TestCase
             'is_active' => true,
         ]);
 
-        $response = $this->withSession(['cart' => [$product->id => 1]])
+        $user = User::factory()->create(['name' => 'Sam Shopper', 'email' => 'sam@example.com']);
+
+        $response = $this->actingAs($user)->withSession(['cart' => [$product->id => 1]])
             ->post(route('store.checkout.store'), [
                 'customer_name' => 'Sam Shopper',
                 'customer_email' => 'sam@example.com',
@@ -333,7 +338,9 @@ class CartControllerTest extends TestCase
             ],
         ];
 
-        $response = $this->withSession(['cart' => $cart])
+        $user = User::factory()->create(['name' => 'Sam Shopper', 'email' => 'sam@example.com']);
+
+        $response = $this->actingAs($user)->withSession(['cart' => $cart])
             ->post(route('store.checkout.store'), [
                 'customer_name' => 'Sam Shopper',
                 'customer_email' => 'sam@example.com',

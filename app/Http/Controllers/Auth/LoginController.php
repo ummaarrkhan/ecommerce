@@ -8,8 +8,12 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    public function showLogin()
+    public function showLogin(Request $request)
     {
+        if ($request->filled('intended')) {
+            session(['url.intended' => $request->query('intended')]);
+        }
+
         return view('auth.login');
     }
 
@@ -50,6 +54,7 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route('store.home')
+            ->with('success', 'You have been signed out successfully.');
     }
 }

@@ -8,6 +8,13 @@
     <p class="text-muted small mb-0">Sign in to manage your orders and account</p>
 </div>
 
+@if (str_contains(session('url.intended', ''), 'checkout'))
+    <div class="alert alert-primary py-2 px-3 mb-3 small d-flex align-items-center gap-2">
+        <i class="bi bi-bag-check-fill fs-5"></i>
+        <div>Please sign in to complete your checkout order.</div>
+    </div>
+@endif
+
 <form method="POST" action="{{ route('login.submit') }}">
     @csrf
 

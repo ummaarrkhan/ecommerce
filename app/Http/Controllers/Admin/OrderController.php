@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\OrderStatusUpdatedMail;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
@@ -68,10 +71,20 @@ class OrderController extends Controller
             ],
         ]);
 
+        $previousStatus = $order->status;
+
         // Save new order status
         $order->update([
             'status' => $validated['status'],
         ]);
+
+        if ($previousStatus !== $validated['status']) {
+            try {
+                Mail::to($order->customer_email)->send(new OrderStatusUpdatedMail($order, $previousStatus));
+            } catch (\Throwable $e) {
+                Log::warning("Failed to dispatch order status email for order #{$order->order_number}: ".$e->getMessage());
+            }
+        }
 
         return redirect()->route('admin.orders.show', $order)
             ->with('success', 'Order status updated successfully.');
@@ -129,7 +142,16 @@ class OrderController extends Controller
             }
         }
 
+        $previousStatus = $order->status;
         $order->update($updates);
+
+        if ($order->status !== $previousStatus || $action === 'ship' || $action === 'deliver') {
+            try {
+                Mail::to($order->customer_email)->send(new OrderStatusUpdatedMail($order, $previousStatus));
+            } catch (\Throwable $e) {
+                Log::warning("Failed to dispatch fulfillment update email for order #{$order->order_number}: ".$e->getMessage());
+            }
+        }
 
         return redirect()->route('admin.orders.show', $order)
             ->with('success', 'Fulfillment and tracking details updated successfully.');

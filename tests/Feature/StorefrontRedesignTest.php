@@ -247,7 +247,10 @@ class StorefrontRedesignTest extends TestCase
 
         $this->post(route('store.cart.add', $product), ['quantity' => 1]);
 
-        $checkoutResponse = $this->post(route('store.checkout.store'), [
+        $user = User::factory()->create(['name' => 'Sarah Connor', 'email' => 'sarah@example.com']);
+        $user->assignRole('customer');
+
+        $checkoutResponse = $this->actingAs($user)->post(route('store.checkout.store'), [
             'customer_name' => 'Sarah Connor',
             'customer_email' => 'sarah@example.com',
             'customer_phone' => '+1 555-0199',
@@ -271,6 +274,98 @@ class StorefrontRedesignTest extends TestCase
         $checkoutResponse->assertRedirect(route('store.checkout.success', ['order' => $order->order_number]));
     }
 
+    public function test_guest_can_access_checkout_and_choose_options_or_place_order(): void
+    {
+        $category = Category::create([
+            'name' => 'Home Decor',
+            'slug' => 'home-decor',
+            'is_active' => true,
+        ]);
+
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Ceramic Vase',
+            'slug' => 'ceramic-vase',
+            'sku' => 'VASE-01',
+            'price' => 35.00,
+            'stock_quantity' => 10,
+            'is_active' => true,
+        ]);
+
+        $this->post(route('store.cart.add', $product), ['quantity' => 1]);
+
+        // Guest visits checkout page
+        $response = $this->get(route('store.checkout.index'));
+        $response->assertStatus(200);
+        $response->assertSee('Continue as Guest');
+        $response->assertSee('Sign In');
+        $response->assertSee('Register');
+
+        // Guest completes order without logging in
+        $postResponse = $this->post(route('store.checkout.store'), [
+            'customer_name' => 'Guest Shopper',
+            'customer_email' => 'guest@example.com',
+            'customer_phone' => '1234567890',
+            'shipping_address' => '789 Guest Ave',
+            'shipping_city' => 'Austin',
+            'shipping_postcode' => '73301',
+            'shipping_country' => 'United States',
+            'payment_method' => 'cod',
+        ]);
+
+        $order = Order::where('customer_email', 'guest@example.com')->first();
+        $this->assertNotNull($order);
+        $this->assertNull($order->user_id);
+        $this->assertEquals('Guest Shopper', $order->customer_name);
+        $postResponse->assertRedirect(route('store.checkout.success', ['order' => $order->order_number]));
+    }
+
+    public function test_logging_out_redirects_to_storefront_home(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('logout'));
+
+        $response->assertRedirect(route('store.home'));
+        $this->assertGuest();
+    }
+
+    public function test_signing_in_from_checkout_redirects_back_to_checkout(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'customer@example.com',
+            'password' => bcrypt('password123'),
+        ]);
+
+        // Visiting login with intended checkout URL sets session intended
+        $this->get(route('login', ['intended' => route('store.checkout.index')]));
+
+        $response = $this->post(route('login'), [
+            'email' => 'customer@example.com',
+            'password' => 'password123',
+        ]);
+
+        $response->assertRedirect(route('store.checkout.index'));
+        $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_registering_from_checkout_redirects_back_to_checkout(): void
+    {
+        // Visiting register with intended checkout URL sets session intended
+        $this->get(route('register', ['intended' => route('store.checkout.index')]));
+
+        $response = $this->post(route('register'), [
+            'name' => 'New Shopper',
+            'email' => 'newshopper@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+
+        $response->assertRedirect(route('store.checkout.index'));
+        $this->assertAuthenticated();
+        $this->assertEquals('newshopper@example.com', auth()->user()->email);
+    }
+
     public function test_checkout_stripe_intent_endpoint_returns_client_secret(): void
     {
         $category = Category::create([
@@ -291,7 +386,10 @@ class StorefrontRedesignTest extends TestCase
 
         $this->post(route('store.cart.add', $product), ['quantity' => 1]);
 
-        $response = $this->postJson(route('store.checkout.stripe-intent'));
+        $user = User::factory()->create(['email' => 'stripe_buyer@example.com']);
+        $user->assignRole('customer');
+
+        $response = $this->actingAs($user)->postJson(route('store.checkout.stripe-intent'));
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -323,9 +421,12 @@ class StorefrontRedesignTest extends TestCase
 
         $this->post(route('store.cart.add', $product), ['quantity' => 1]);
 
+        $user = User::factory()->create(['name' => 'Bruce Wayne', 'email' => 'bruce@waynecorp.com']);
+        $user->assignRole('customer');
+
         $mockIntentId = 'pi_test_stripe_custom_mock_12345';
 
-        $checkoutResponse = $this->post(route('store.checkout.store'), [
+        $checkoutResponse = $this->actingAs($user)->post(route('store.checkout.store'), [
             'customer_name' => 'Bruce Wayne',
             'customer_email' => 'bruce@waynecorp.com',
             'customer_phone' => '+1 555-0100',

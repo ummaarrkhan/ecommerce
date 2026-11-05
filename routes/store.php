@@ -122,7 +122,7 @@ Route::get('/products/{product:slug}', [
     'show',
 ])->name('store.products.show');
 
-// Checkout routes
+// Checkout routes (supports authenticated users & guest checkout)
 Route::get('/checkout', [CheckoutController::class, 'index'])
     ->name('store.checkout.index');
 

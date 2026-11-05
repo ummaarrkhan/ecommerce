@@ -3,99 +3,180 @@
 namespace App\Services;
 
 use App\Models\Product;
-use App\Models\ProductVariant;
 
 class CartService
 {
-    /**
-     * @param  array<int|string, mixed>  $cart
-     * @return array<string, array{product_id: int, variant_id: int|null, quantity: int}>
-     */
+    // Convert cart data into a standard format
     public function normalize(array $cart): array
     {
         $items = [];
 
         foreach ($cart as $key => $cartItem) {
-            $parts = explode(':', (string) $key, 2);
-            $productId = (int) (is_array($cartItem)
-                ? ($cartItem['product_id'] ?? $parts[0])
-                : $parts[0]);
-            $variantId = is_array($cartItem)
-                ? ($cartItem['variant_id'] ?? ($parts[1] ?? null))
-                : ($parts[1] ?? null);
-            $quantity = (int) (is_array($cartItem)
-                ? ($cartItem['quantity'] ?? 0)
-                : $cartItem);
 
+            // Separate product ID and variant ID
+            $parts = explode(':', (string) $key);
+
+            // Get product ID
+            if (is_array($cartItem)) {
+                $productId = $cartItem['product_id'] ?? $parts[0];
+            } else {
+                $productId = $parts[0];
+            }
+
+            $productId = (int) $productId;
+
+            // Get variant ID
+            if (is_array($cartItem)) {
+                $variantId = $cartItem['variant_id'] ?? ($parts[1] ?? null);
+            } else {
+                $variantId = $parts[1] ?? null;
+            }
+
+            // Get quantity
+            if (is_array($cartItem)) {
+                $quantity = (int) ($cartItem['quantity'] ?? 0);
+            } else {
+                $quantity = (int) $cartItem;
+            }
+
+            // Skip invalid products or quantities
             if ($productId < 1 || $quantity < 1) {
                 continue;
             }
 
-            $variantId = $variantId === null || $variantId === ''
-                ? null
-                : (int) $variantId;
-            $itemKey = $this->key($productId, $variantId);
+            // Convert empty variant ID to null
+            if ($variantId === null || $variantId === '') {
+                $variantId = null;
+            } else {
+                $variantId = (int) $variantId;
+            }
 
-            $items[$itemKey] = [
-                'product_id' => $productId,
-                'variant_id' => $variantId,
-                'quantity' => ($items[$itemKey]['quantity'] ?? 0) + $quantity,
-            ];
+            // Create a unique key for the cart item
+            if ($variantId === null) {
+                $itemKey = (string) $productId;
+            } else {
+                $itemKey = $productId.':'.$variantId;
+            }
+
+            // Add item to cart
+            if (isset($items[$itemKey])) {
+                $items[$itemKey]['quantity'] += $quantity;
+            } else {
+                $items[$itemKey] = [
+                    'product_id' => $productId,
+                    'variant_id' => $variantId,
+                    'quantity' => $quantity,
+                ];
+            }
         }
 
         return $items;
     }
 
-    /**
-     * @param  array<int|string, mixed>  $cart
-     * @return array<int, array<string, mixed>>
-     */
+    // Get complete product information for cart items
     public function items(array $cart): array
     {
-        $normalized = $this->normalize($cart);
-        $productIds = collect($normalized)
-            ->pluck('product_id')
-            ->unique()
-            ->all();
+        $normalizedCart = $this->normalize($cart);
 
+        // Get all product IDs
+        $productIds = [];
+
+        foreach ($normalizedCart as $cartItem) {
+            if (! in_array($cartItem['product_id'], $productIds)) {
+                $productIds[] = $cartItem['product_id'];
+            }
+        }
+
+        // Get products from database
         $products = Product::with(['category', 'variants'])
             ->whereIn('id', $productIds)
-            ->get()
-            ->keyBy('id');
+            ->get();
 
         $items = [];
 
-        foreach ($normalized as $key => $cartItem) {
-            $product = $products->get($cartItem['product_id']);
+        foreach ($normalizedCart as $key => $cartItem) {
 
-            if (! $product) {
+            // Find the product
+            $product = null;
+
+            foreach ($products as $storedProduct) {
+                if ($storedProduct->id == $cartItem['product_id']) {
+                    $product = $storedProduct;
+                    break;
+                }
+            }
+
+            // Skip if product does not exist
+            if ($product === null) {
                 continue;
             }
 
-            $variant = $cartItem['variant_id'] === null
-                ? null
-                : $product->variants->firstWhere('id', $cartItem['variant_id']);
-            $hasActiveVariants = $product->variants->contains(
-                fn (ProductVariant $productVariant): bool => $productVariant->is_active
-            );
-            $stock = $variant?->stock_quantity ?? $product->stock_quantity;
-            $unitPrice = $variant?->price ?? $product->price;
-            $isAvailable = $product->is_active
-                && ($cartItem['variant_id'] === null
-                    ? ! $hasActiveVariants
-                    : $variant?->is_active === true)
-                && $cartItem['quantity'] <= $stock;
+            // Find selected variant
+            $variant = null;
 
+            if ($cartItem['variant_id'] !== null) {
+                foreach ($product->variants as $productVariant) {
+                    if ($productVariant->id == $cartItem['variant_id']) {
+                        $variant = $productVariant;
+                        break;
+                    }
+                }
+            }
+
+            // Check if product has active variants
+            $hasActiveVariants = false;
+
+            foreach ($product->variants as $productVariant) {
+                if ($productVariant->is_active) {
+                    $hasActiveVariants = true;
+                    break;
+                }
+            }
+
+            // Get stock and price
+            if ($variant !== null) {
+                $stock = $variant->stock_quantity;
+                $unitPrice = $variant->price;
+            } else {
+                $stock = $product->stock_quantity;
+                $unitPrice = $product->price;
+            }
+
+            // Check product availability
+            $isAvailable = true;
+
+            if (! $product->is_active) {
+                $isAvailable = false;
+            }
+
+            if ($cartItem['variant_id'] === null && $hasActiveVariants) {
+                $isAvailable = false;
+            }
+
+            if ($cartItem['variant_id'] !== null) {
+                if ($variant === null || ! $variant->is_active) {
+                    $isAvailable = false;
+                }
+            }
+
+            if ($cartItem['quantity'] > $stock) {
+                $isAvailable = false;
+            }
+
+            // Calculate subtotal
+            $subtotal = round($unitPrice * $cartItem['quantity'], 2);
+
+            // Add product information to cart
             $items[] = [
                 'key' => $key,
                 'product' => $product,
                 'variant' => $variant,
                 'variant_id' => $cartItem['variant_id'],
-                'variant_name' => $variant?->display_name,
+                'variant_name' => $variant !== null ? $variant->display_name : null,
                 'quantity' => $cartItem['quantity'],
                 'unit_price' => (float) $unitPrice,
                 'stock' => (int) $stock,
-                'subtotal' => round((float) $unitPrice * $cartItem['quantity'], 2),
+                'subtotal' => $subtotal,
                 'is_available' => $isAvailable,
             ];
         }
@@ -103,25 +184,33 @@ class CartService
         return $items;
     }
 
-    /**
-     * @param  array<int|string, mixed>  $cart
-     * @return array{items: array<int, array<string, mixed>>, count: int, subtotal: float}
-     */
+    // Get cart summary
     public function summary(array $cart): array
     {
         $items = $this->items($cart);
 
+        $totalQuantity = 0;
+        $totalPrice = 0;
+
+        foreach ($items as $item) {
+            $totalQuantity += $item['quantity'];
+            $totalPrice += $item['subtotal'];
+        }
+
         return [
             'items' => $items,
-            'count' => array_sum(array_column($items, 'quantity')),
-            'subtotal' => round(array_sum(array_column($items, 'subtotal')), 2),
+            'count' => $totalQuantity,
+            'subtotal' => round($totalPrice, 2),
         ];
     }
 
+    // Create a unique cart item key
     public function key(int $productId, ?int $variantId): string
     {
-        return $variantId === null
-            ? (string) $productId
-            : $productId.':'.$variantId;
+        if ($variantId === null) {
+            return (string) $productId;
+        }
+
+        return $productId.':'.$variantId;
     }
 }

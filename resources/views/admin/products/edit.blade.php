@@ -269,7 +269,7 @@
 
                 @if ($product->image)
                     <div class="mb-3 text-center">
-                        <img src="{{ Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="rounded border p-1" style="max-height: 160px; object-fit: cover;">
+                        <img src="{{ Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="rounded border bg-light p-2" style="max-height: 160px; max-width: 100%; object-fit: contain; object-position: center;">
                         <div class="small text-muted mt-1">Current Primary Image</div>
                     </div>
                 @endif
@@ -295,7 +295,7 @@
                         <div class="d-grid gap-2">
                             @foreach ($product->images as $galleryImage)
                                 <label class="d-flex align-items-center gap-2 border rounded-3 p-2">
-                                    <img src="{{ $galleryImage->url }}" alt="Gallery image {{ $loop->iteration }}" class="rounded" style="width: 56px; height: 56px; object-fit: cover;">
+                                    <img src="{{ $galleryImage->url }}" alt="Gallery image {{ $loop->iteration }}" class="rounded border bg-light p-1" style="width: 56px; height: 56px; object-fit: contain; object-position: center;">
                                     <span class="small flex-grow-1">Photo {{ $loop->iteration }}</span>
                                     <input type="checkbox" name="remove_images[]" value="{{ $galleryImage->id }}" aria-label="Remove photo {{ $loop->iteration }}">
                                     <span class="small text-danger">Remove</span>

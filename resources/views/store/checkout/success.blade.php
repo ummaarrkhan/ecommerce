@@ -128,7 +128,7 @@
                                 <tr>
                                     <td class="ps-3 py-3" style="width: 60px;">
                                         @if ($item->product && $item->product->image)
-                                            <img src="{{ Str::startsWith($item->product->image, ['http://', 'https://']) ? $item->product->image : asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}" class="rounded" style="width: 48px; height: 48px; object-fit: cover;">
+                                            <img src="{{ Str::startsWith($item->product->image, ['http://', 'https://']) ? $item->product->image : asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}" class="rounded border bg-light p-1" style="width: 48px; height: 48px; object-fit: contain; object-position: center;">
                                         @else
                                             <div class="bg-light rounded d-flex align-items-center justify-content-center text-muted" style="width: 48px; height: 48px;">
                                                 <i class="bi bi-box"></i>

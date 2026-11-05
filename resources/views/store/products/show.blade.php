@@ -42,6 +42,24 @@
                                 <span class="small">No image uploaded</span>
                             </div>
                         @endif
+
+                        {{-- Badges inside gallery container --}}
+                        <div class="position-absolute top-0 start-0 m-3 d-flex flex-column gap-2" style="z-index: 3;">
+                            @if ($product->compare_at_price && $product->compare_at_price > $product->price)
+                                @php
+                                    $savings = round((($product->compare_at_price - $product->price) / $product->compare_at_price) * 100);
+                                @endphp
+                                <span class="badge bg-danger rounded-pill px-3 py-2 fw-bold shadow-xs">
+                                    SAVE {{ $savings }}%
+                                </span>
+                            @endif
+
+                            @if ($availableStock < 1)
+                                <span class="badge bg-secondary rounded-pill px-3 py-2 fw-bold shadow-xs">
+                                    Sold Out
+                                </span>
+                            @endif
+                        </div>
                     </div>
 
                     @if ($galleryImages->count() > 1)
@@ -59,24 +77,6 @@
                             @endforeach
                         </div>
                     @endif
-
-                    {{-- Badges --}}
-                    <div class="position-absolute top-0 start-0 m-3 d-flex flex-column gap-2">
-                        @if ($product->compare_at_price && $product->compare_at_price > $product->price)
-                            @php
-                                $savings = round((($product->compare_at_price - $product->price) / $product->compare_at_price) * 100);
-                            @endphp
-                            <span class="badge bg-danger rounded-pill px-3 py-2 fw-bold shadow-xs">
-                                SAVE {{ $savings }}%
-                            </span>
-                        @endif
-
-                        @if ($availableStock < 1)
-                            <span class="badge bg-secondary rounded-pill px-3 py-2 fw-bold shadow-xs">
-                                Sold Out
-                            </span>
-                        @endif
-                    </div>
                 </div>
             </div>
 

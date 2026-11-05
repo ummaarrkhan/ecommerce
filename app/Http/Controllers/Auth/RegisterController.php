@@ -3,16 +3,23 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\WelcomeMail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules\Password;
 
 class RegisterController extends Controller
 {
-    public function showRegister()
+    public function showRegister(Request $request)
     {
+        if ($request->filled('intended')) {
+            session(['url.intended' => $request->query('intended')]);
+        }
+
         return view('auth.register');
     }
 
@@ -46,6 +53,12 @@ class RegisterController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->route('store.account');
+        try {
+            Mail::to($user->email)->send(new WelcomeMail($user));
+        } catch (\Throwable $e) {
+            Log::warning("Failed to dispatch welcome email for user #{$user->id}: ".$e->getMessage());
+        }
+
+        return redirect()->intended(route('store.account'));
     }
 }

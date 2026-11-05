@@ -68,7 +68,7 @@
                             <tr>
                                 <td>
                                     @if ($item->product && $item->product->image)
-                                        <img src="{{ Str::startsWith($item->product->image, ['http://', 'https://']) ? $item->product->image : asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}" class="rounded border" style="width: 44px; height: 44px; object-fit: cover;">
+                                        <img src="{{ Str::startsWith($item->product->image, ['http://', 'https://']) ? $item->product->image : asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}" class="rounded border bg-light p-1" style="width: 44px; height: 44px; object-fit: contain; object-position: center;">
                                     @else
                                         <div class="bg-light rounded border d-flex align-items-center justify-content-center text-muted" style="width: 44px; height: 44px;">
                                             <i class="bi bi-box"></i>

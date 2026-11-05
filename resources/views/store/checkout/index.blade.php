@@ -29,6 +29,81 @@
         <div class="row g-4 align-items-start">
             {{-- Customer & Shipping Form --}}
             <div class="col-lg-7">
+                {{-- Account Gate / Guest Option --}}
+                @guest
+                    <div class="card border rounded-3 p-4 mb-4 bg-white shadow-xs">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="badge bg-primary-subtle text-primary fw-bold px-2 py-1 small text-uppercase" style="letter-spacing: 0.5px;">Checkout Options</span>
+                            <span class="text-muted small"><i class="bi bi-shield-lock me-1"></i> SSL Encrypted Checkout</span>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-1">Choose how you would like to complete your order</h5>
+                        <p class="text-muted small mb-3">Continue as a guest for fast checkout, or sign in / register to track and manage orders in your account.</p>
+
+                        <div class="row g-3">
+                            {{-- Option 1: Continue as Guest (Active by default) --}}
+                            <div class="col-md-4">
+                                <div class="p-3 border rounded-3 h-100 bg-light-subtle d-flex flex-column justify-content-between border-primary border-2">
+                                    <div>
+                                        <div class="d-flex align-items-center justify-content-between mb-1">
+                                            <span class="fw-bold text-dark small"><i class="bi bi-person me-1"></i> Continue as Guest</span>
+                                            <span class="badge bg-primary text-white" style="font-size: 0.65rem;">Active</span>
+                                        </div>
+                                        <p class="text-muted small mb-0" style="font-size: 0.8rem;">No account needed. Just fill in your delivery details below and confirm.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Option 2: Sign In --}}
+                            <div class="col-md-4">
+                                <div class="p-3 border rounded-3 h-100 bg-white d-flex flex-column justify-content-between">
+                                    <div class="mb-2">
+                                        <div class="d-flex align-items-center justify-content-between mb-1">
+                                            <span class="fw-bold text-dark small"><i class="bi bi-box-arrow-in-right me-1"></i> Sign In</span>
+                                        </div>
+                                        <p class="text-muted small mb-0" style="font-size: 0.8rem;">Have an account? Access saved info & points.</p>
+                                    </div>
+                                    <a href="{{ route('login', ['intended' => route('store.checkout.index')]) }}" class="btn btn-sm btn-store-primary w-100 mt-2">
+                                        Sign In
+                                    </a>
+                                </div>
+                            </div>
+
+                            {{-- Option 3: Register --}}
+                            <div class="col-md-4">
+                                <div class="p-3 border rounded-3 h-100 bg-white d-flex flex-column justify-content-between">
+                                    <div class="mb-2">
+                                        <div class="d-flex align-items-center justify-content-between mb-1">
+                                            <span class="fw-bold text-dark small"><i class="bi bi-person-plus me-1"></i> Register</span>
+                                        </div>
+                                        <p class="text-muted small mb-0" style="font-size: 0.8rem;">New user? Track orders easily anytime.</p>
+                                    </div>
+                                    <a href="{{ route('register', ['intended' => route('store.checkout.index')]) }}" class="btn btn-sm btn-store-outline w-100 mt-2">
+                                        Register
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <div class="card border rounded-3 p-3 mb-4 bg-white shadow-xs d-flex flex-row justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <i class="bi bi-person-check-fill fs-5"></i>
+                            </div>
+                            <div>
+                                <span class="small text-muted d-block">Signed in as</span>
+                                <strong class="text-dark">{{ auth()->user()->name }}</strong> <span class="text-muted small">({{ auth()->user()->email }})</span>
+                            </div>
+                        </div>
+                        <form method="POST" action="{{ route('logout') }}" class="mb-0">
+                            @csrf
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-box-arrow-right me-1"></i> Sign Out / Switch
+                            </button>
+                        </form>
+                    </div>
+                @endguest
+
                 {{-- Step 1: Contact Details --}}
                 <div class="checkout-card mb-4">
                     <div class="checkout-card-header d-flex align-items-center gap-2">
@@ -55,15 +130,30 @@
 
                             <div class="col-md-6">
                                 <label for="customer_email" class="form-label small fw-semibold text-secondary">Email Address *</label>
-                                <input
-                                    type="email"
-                                    id="customer_email"
-                                    name="customer_email"
-                                    class="form-control @error('customer_email') is-invalid @enderror"
-                                    value="{{ old('customer_email', auth()->user()->email ?? '') }}"
-                                    placeholder="jane@example.com"
-                                    required
-                                >
+                                @auth
+                                    <input
+                                        type="email"
+                                        id="customer_email"
+                                        name="customer_email"
+                                        class="form-control bg-light @error('customer_email') is-invalid @enderror"
+                                        value="{{ auth()->user()->email }}"
+                                        readonly
+                                        required
+                                    >
+                                    <span class="form-text small text-muted">Order confirmation will be sent to your account email</span>
+                                @else
+                                    <input
+                                        type="email"
+                                        id="customer_email"
+                                        name="customer_email"
+                                        class="form-control @error('customer_email') is-invalid @enderror"
+                                        value="{{ old('customer_email') }}"
+                                        placeholder="jane@example.com"
+                                        autocomplete="email"
+                                        required
+                                    >
+                                    <span class="form-text small text-muted">We will send your order confirmation and tracking to this email</span>
+                                @endauth
                                 @error('customer_email')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -309,7 +399,7 @@
                             @endphp
                             <div class="d-flex align-items-center gap-3 py-2">
                                 @if ($product->image)
-                                    <img src="{{ Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="rounded" style="width: 48px; height: 48px; object-fit: cover;">
+                                    <img src="{{ Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="rounded border bg-light p-1" style="width: 48px; height: 48px; object-fit: contain; object-position: center;">
                                 @else
                                     <div class="bg-light rounded d-flex align-items-center justify-content-center text-muted" style="width: 48px; height: 48px;">
                                         <i class="bi bi-box"></i>
