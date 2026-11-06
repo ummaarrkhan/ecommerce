@@ -5,7 +5,7 @@
 @section('content')
 <div class="text-center mb-4">
     <h3 class="fw-bold mb-1 text-dark">Create Account</h3>
-    <p class="text-muted small mb-0">Join {{ config('app.name', 'SHOPX') }} for seamless checkout</p>
+    <p class="text-muted small mb-0">Join {{ config('app.name', 'MONO') }} for seamless checkout</p>
 </div>
 
 @if (str_contains(session('url.intended', ''), 'checkout'))

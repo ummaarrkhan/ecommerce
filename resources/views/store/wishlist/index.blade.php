@@ -1,6 +1,6 @@
 @extends('layouts.store')
 
-@section('title', 'My Saved Wishlist | ' . config('app.name', 'SHOPX'))
+@section('title', 'My Saved Wishlist | ' . config('app.name', 'MONO'))
 
 @section('content')
 <div class="container py-5">

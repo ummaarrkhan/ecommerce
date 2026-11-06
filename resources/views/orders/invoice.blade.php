@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice #{{ $order->order_number }} | {{ config('app.name', 'SHOPX') }}</title>
+    <title>Invoice #{{ $order->order_number }} | {{ config('app.name', 'MONO') }}</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -103,7 +103,7 @@
             <div>
                 <div class="d-flex align-items-center gap-2 mb-2">
                     <span class="brand-badge"><i class="bi bi-bag-check-fill"></i></span>
-                    <span class="fs-4 fw-bold text-dark">{{ config('app.name', 'SHOPX') }}</span>
+                    <span class="fs-4 fw-bold text-dark">{{ config('app.name', 'MONO') }}</span>
                 </div>
                 <p class="text-muted small mb-0">Curated Contemporary Goods & Essentials</p>
                 <p class="text-muted small mb-0">support@{{ request()->getHost() }}</p>
@@ -234,7 +234,7 @@
 
         {{-- Footer Acknowledgement --}}
         <div class="border-top pt-3 text-center text-muted small">
-            <p class="mb-1">Thank you for your purchase with <strong>{{ config('app.name', 'SHOPX') }}</strong>!</p>
+            <p class="mb-1">Thank you for your purchase with <strong>{{ config('app.name', 'MONO') }}</strong>!</p>
             <p class="mb-0 opacity-75">If you have any questions about this receipt, please contact our concierge at support@{{ request()->getHost() }}</p>
         </div>
     </div>

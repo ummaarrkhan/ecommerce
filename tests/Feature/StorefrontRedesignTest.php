@@ -50,6 +50,66 @@ class StorefrontRedesignTest extends TestCase
         $response->assertSee('Menswear');
     }
 
+    public function test_all_items_are_paginated_eight_per_page(): void
+    {
+        $category = Category::create([
+            'name' => 'Catalog',
+            'slug' => 'catalog-pagination',
+            'is_active' => true,
+        ]);
+
+        $this->createProducts($category, 'Catalog', 9);
+
+        $firstPage = $this->get(route('store.home'));
+        $firstPage->assertOk()
+            ->assertViewHas('products', fn ($products): bool => $products->perPage() === 8
+                && $products->count() === 8
+                && $products->total() === 9
+                && str_ends_with($products->url(2), '#featured-products'));
+
+        $secondPage = $this->get(route('store.home', ['page' => 2]));
+        $secondPage->assertOk()
+            ->assertViewHas('products', fn ($products): bool => $products->perPage() === 8
+                && $products->count() === 1
+                && $products->currentPage() === 2
+                && $products->total() === 9);
+    }
+
+    public function test_parent_and_subcategory_results_are_paginated_eight_per_page(): void
+    {
+        $parentCategory = Category::create([
+            'name' => 'Menswear Pagination',
+            'slug' => 'menswear-pagination',
+            'is_active' => true,
+        ]);
+
+        $subcategory = Category::create([
+            'name' => 'Shirts Pagination',
+            'slug' => 'shirts-pagination',
+            'parent_id' => $parentCategory->id,
+            'is_active' => true,
+        ]);
+
+        $this->createProducts($subcategory, 'Shirt', 9);
+
+        foreach ([$parentCategory, $subcategory] as $category) {
+            $response = $this->get(route('store.home', [
+                'category_id' => $category->id,
+                'page' => 2,
+            ]));
+
+            $response->assertOk()
+                ->assertViewHas('products', fn ($products): bool => $products->perPage() === 8
+                    && $products->count() === 1
+                    && $products->currentPage() === 2
+                    && $products->total() === 9
+                    && str_contains($products->url(2), 'category_id='.$category->id)
+                    && str_ends_with($products->url(2), '#featured-products'));
+
+            $response->assertDontSee('category_id='.$category->id.'&amp;page=2');
+        }
+    }
+
     public function test_product_detail_page_renders_successfully(): void
     {
         $category = Category::create([
@@ -644,5 +704,20 @@ class StorefrontRedesignTest extends TestCase
         $subResponse->assertSee('Men Oxford Shirt');
         $subResponse->assertDontSee('Men Leather Loafer');
         $subResponse->assertDontSee('Women Silk Blouse');
+    }
+
+    private function createProducts(Category $category, string $namePrefix, int $count): void
+    {
+        for ($index = 1; $index <= $count; $index++) {
+            Product::create([
+                'category_id' => $category->id,
+                'name' => "{$namePrefix} Product {$index}",
+                'slug' => strtolower($namePrefix).'-pagination-product-'.$index,
+                'sku' => strtoupper($namePrefix).'-PAGINATION-'.$index,
+                'price' => 25.00,
+                'stock_quantity' => 10,
+                'is_active' => true,
+            ]);
+        }
     }
 }

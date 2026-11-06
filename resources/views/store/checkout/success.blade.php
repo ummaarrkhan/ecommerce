@@ -1,6 +1,6 @@
 @extends('layouts.store')
 
-@section('title', 'Order Confirmed #' . $order->order_number . ' | ' . config('app.name', 'SHOPX'))
+@section('title', 'Order Confirmed #' . $order->order_number . ' | ' . config('app.name', 'MONO'))
 
 @section('content')
 <div class="container py-5">

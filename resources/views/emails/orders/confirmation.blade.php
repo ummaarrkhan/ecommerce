@@ -1,6 +1,6 @@
 @extends('emails.layout')
 
-@section('title', 'Order Confirmation #' . $order->order_number . ' | ' . config('app.name', 'SHOPX'))
+@section('title', 'Order Confirmation #' . $order->order_number . ' | ' . config('app.name', 'MONO'))
 
 @section('content')
     <!-- Greeting & Status Banner -->

@@ -1,6 +1,6 @@
 @extends('emails.layout')
 
-@section('title', 'Welcome to ' . config('app.name', 'SHOPX') . ', ' . $user->name . '!')
+@section('title', 'Welcome to ' . config('app.name', 'MONO') . ', ' . $user->name . '!')
 
 @section('content')
     <!-- Welcome Header -->
@@ -9,7 +9,7 @@
             &#127881;
         </div>
         <h1 style="margin: 0 0 8px 0; font-size: 24px; font-weight: 800; color: #0f172a;">
-            Welcome to {{ config('app.name', 'SHOPX') }}!
+            Welcome to {{ config('app.name', 'MONO') }}!
         </h1>
         <p style="margin: 0; font-size: 15px; color: #64748b; line-height: 1.5;">
             Hi <strong>{{ $user->name }}</strong>, your account is all set up and ready to go.

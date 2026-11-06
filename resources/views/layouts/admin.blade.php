@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Admin Dashboard') | {{ config('app.name', 'SHOPX') }} Admin</title>
+    <title>@yield('title', 'Admin Dashboard') | {{ config('app.name', 'MONO') }} Admin</title>
 
     <!-- Google Fonts: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,7 +29,7 @@
             <div class="admin-sidebar-header">
                 <a href="{{ route('admin.dashboard') }}" class="admin-brand text-decoration-none">
                     <span class="badge-admin">Admin</span>
-                    <span>{{ config('app.name', 'SHOPX') }}</span>
+                    <span>{{ config('app.name', 'MONO') }}</span>
                 </a>
             </div>
 
@@ -91,7 +91,7 @@
             <div class="admin-sidebar-header">
                 <a href="{{ route('admin.dashboard') }}" class="admin-brand text-decoration-none">
                     <span class="badge-admin">Admin</span>
-                    <span>{{ config('app.name', 'SHOPX') }}</span>
+                    <span>{{ config('app.name', 'MONO') }}</span>
                 </a>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>

@@ -68,7 +68,7 @@ class StripePaymentService
                         'enabled' => true,
                     ],
                     'metadata' => array_merge([
-                        'app_name' => config('app.name', 'SHOPX'),
+                        'app_name' => config('app.name', 'MONO'),
                     ], $metadata),
                 ]);
 

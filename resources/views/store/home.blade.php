@@ -1,6 +1,6 @@
 @extends('layouts.store')
 
-@section('title', config('app.name', 'SHOPX') . ' — Timeless Style & Curated Essentials')
+@section('title', config('app.name', 'MONO') . ' — Timeless Style & Curated Essentials')
 
 @section('content')
     {{-- Hero Section --}}
@@ -148,7 +148,7 @@
                             $isCatActive = $selectedCatId == $cat->id;
                             $isCatParentActive = $activeParent && $activeParent->id == $cat->id;
                         @endphp
-                        <a href="{{ route('store.home', array_merge(request()->query(), ['category_id' => $cat->id])) }}#featured-products" class="category-pill {{ $isCatActive || $isCatParentActive ? 'active' : '' }}">
+                        <a href="{{ route('store.home', array_merge(request()->except('page'), ['category_id' => $cat->id])) }}#featured-products" class="category-pill {{ $isCatActive || $isCatParentActive ? 'active' : '' }}">
                             <span>{{ $cat->name }}</span>
                             @if ($cat->total_products_count > 0)
                                 <span class="badge {{ $isCatActive || $isCatParentActive ? 'bg-white text-dark' : 'bg-secondary' }} rounded-pill ms-1">{{ $cat->total_products_count }}</span>
@@ -162,12 +162,12 @@
                         <span class="small text-muted fw-bold me-1 text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">
                             <i class="bi bi-diagram-3 me-1"></i> {{ $activeParent->name }} Subcategories:
                         </span>
-                        <a href="{{ route('store.home', array_merge(request()->query(), ['category_id' => $activeParent->id])) }}#featured-products"
+                        <a href="{{ route('store.home', array_merge(request()->except('page'), ['category_id' => $activeParent->id])) }}#featured-products"
                            class="badge rounded-pill px-3 py-2 text-decoration-none fw-semibold {{ $selectedCatId == $activeParent->id ? 'bg-dark text-white shadow-xs' : 'bg-light text-dark border' }}">
                             All {{ $activeParent->name }} ({{ $activeParent->total_products_count }})
                         </a>
                         @foreach ($activeParent->children as $subcat)
-                            <a href="{{ route('store.home', array_merge(request()->query(), ['category_id' => $subcat->id])) }}#featured-products"
+                            <a href="{{ route('store.home', array_merge(request()->except('page'), ['category_id' => $subcat->id])) }}#featured-products"
                                class="badge rounded-pill px-3 py-2 text-decoration-none fw-semibold {{ $selectedCatId == $subcat->id ? 'bg-primary text-white shadow-xs' : 'bg-light text-dark border' }}">
                                 {{ $subcat->name }} ({{ $subcat->products_count }})
                             </a>

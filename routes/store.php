@@ -65,7 +65,9 @@ Route::get('/', function (Request $request) {
             break;
     }
 
-    $products = $query->paginate(12)->withQueryString();
+    $products = $query->paginate(8)
+        ->withQueryString()
+        ->fragment('featured-products');
     $newArrivals = Product::with(['category.parent', 'activeVariants'])
         ->where('is_active', true)
         ->latest()

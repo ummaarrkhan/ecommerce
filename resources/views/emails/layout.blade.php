@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>@yield('title', config('app.name', 'SHOPX'))</title>
+    <title>@yield('title', config('app.name', 'MONO'))</title>
     <style>
         body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
         table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
@@ -30,7 +30,7 @@
                         <td align="center" style="background-color: #0f172a; padding: 28px 24px;">
                             <a href="{{ route('store.home') }}" style="text-decoration: none; display: inline-block;">
                                 <span style="font-size: 24px; font-weight: 800; letter-spacing: 1.5px; color: #ffffff; text-transform: uppercase;">
-                                    {{ config('app.name', 'SHOPX') }}
+                                    {{ config('app.name', 'MONO') }}
                                 </span>
                             </a>
                             <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #94a3b8; margin-top: 4px;">
@@ -57,7 +57,7 @@
                                 <a href="{{ route('store.account') }}" style="color: #2563eb; text-decoration: none; font-weight: 600; margin: 0 8px;">My Account</a>
                             </p>
                             <p style="margin: 0; font-size: 11px; color: #94a3b8; line-height: 1.5;">
-                                &copy; {{ date('Y') }} {{ config('app.name', 'SHOPX') }}. All rights reserved.<br>
+                                &copy; {{ date('Y') }} {{ config('app.name', 'MONO') }}. All rights reserved.<br>
                                 This is an automated transactional message regarding your account or order.
                             </p>
                         </td>

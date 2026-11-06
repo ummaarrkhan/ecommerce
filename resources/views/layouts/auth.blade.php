@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Authentication') | {{ config('app.name', 'SHOPX') }}</title>
+    <title>@yield('title', 'Authentication') | {{ config('app.name', 'MONO') }}</title>
 
     <!-- Google Fonts: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,7 +28,7 @@
         <div class="mb-4 text-center">
             <a href="{{ route('store.home') }}" class="store-brand d-inline-flex align-items-center gap-2 text-decoration-none">
                 <span class="brand-badge"><i class="bi bi-bag-check-fill"></i></span>
-                <span class="store-brand-text fs-3">{{ config('app.name', 'SHOPX') }}</span>
+                <span class="store-brand-text fs-3">{{ config('app.name', 'MONO') }}</span>
             </a>
         </div>
 
@@ -67,7 +67,7 @@
                 <i class="bi bi-arrow-left me-1"></i> Return to store
             </a>
             <div class="mt-2 text-secondary opacity-75">
-                &copy; {{ date('Y') }} {{ config('app.name', 'SHOPX') }}. All rights reserved.
+                &copy; {{ date('Y') }} {{ config('app.name', 'MONO') }}. All rights reserved.
             </div>
         </div>
     </div>

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', config('app.name', 'SHOPX') . ' — Modern Curated Essentials')</title>
+    <title>@yield('title', config('app.name', 'MONO') . ' — Modern Curated Essentials')</title>
 
     <!-- Google Fonts: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,7 +39,7 @@
                 {{-- Brand Logo --}}
                 <a class="store-brand" href="{{ route('store.home') }}">
                     <span class="brand-badge"><i class="bi bi-bag-check-fill"></i></span>
-                    <span class="store-brand-text">{{ config('app.name', 'SHOPX') }}</span>
+                    <span class="store-brand-text">{{ config('app.name', 'MONO') }}</span>
                 </a>
 
                 {{-- Mobile Toggle --}}
@@ -247,7 +247,7 @@
                 <div class="col-lg-4 col-md-6">
                     <a class="store-brand text-white mb-3 d-inline-flex" href="{{ route('store.home') }}">
                         <span class="brand-badge bg-primary text-white"><i class="bi bi-bag-check-fill"></i></span>
-                        <span>{{ config('app.name', 'SHOPX') }}</span>
+                        <span>{{ config('app.name', 'MONO') }}</span>
                     </a>
                     <p class="text-secondary small pe-lg-4">
                         Curated collection of everyday essentials crafted with purpose, durability, and timeless modern style. Elevate your wardrobe and living space today.
@@ -291,7 +291,7 @@
 
             <div class="store-footer-bottom d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
                 <div class="small">
-                    &copy; {{ date('Y') }} {{ config('app.name', 'SHOPX') }}. All rights reserved.
+                    &copy; {{ date('Y') }} {{ config('app.name', 'MONO') }}. All rights reserved.
                 </div>
                 <div class="d-flex align-items-center gap-3 text-secondary small">
                     <span><i class="bi bi-shield-check text-success me-1"></i> Secure 256-bit SSL</span>

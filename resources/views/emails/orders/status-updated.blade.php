@@ -1,6 +1,6 @@
 @extends('emails.layout')
 
-@section('title', 'Order Update #' . $order->order_number . ' | ' . config('app.name', 'SHOPX'))
+@section('title', 'Order Update #' . $order->order_number . ' | ' . config('app.name', 'MONO'))
 
 @section('content')
     @php

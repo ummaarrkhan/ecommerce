@@ -1,6 +1,6 @@
 @extends('layouts.store')
 
-@section('title', 'Shopping Cart | ' . config('app.name', 'SHOPX'))
+@section('title', 'Shopping Cart | ' . config('app.name', 'MONO'))
 
 @section('content')
 <div class="container py-5">
