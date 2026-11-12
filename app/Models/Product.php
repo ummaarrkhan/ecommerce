@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Product extends Model
@@ -98,7 +99,7 @@ class Product extends Model
                 'id' => 'primary',
                 'url' => Str::startsWith($this->image, ['http://', 'https://'])
                     ? $this->image
-                    : asset('storage/'.$this->image),
+                    : Storage::disk(config('filesystems.default', 'public'))->url($this->image),
                 'is_primary' => true,
             ]);
         }

@@ -135,11 +135,12 @@ class CartService
 
             // Get stock and price
             if ($variant !== null) {
+                $variant->setRelation('product', $product);
                 $stock = $variant->stock_quantity;
-                $unitPrice = $variant->price;
+                $unitPrice = $variant->price !== null ? (float) $variant->price : (float) $product->price;
             } else {
                 $stock = $product->stock_quantity;
-                $unitPrice = $product->price;
+                $unitPrice = (float) $product->price;
             }
 
             // Check product availability

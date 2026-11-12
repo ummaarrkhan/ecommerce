@@ -13,8 +13,10 @@ class AccountController extends Controller
     {
         $user = $request->user();
 
-        $orders = Order::where('user_id', $user->id)
-            ->orWhere('customer_email', $user->email)
+        $orders = Order::where(function ($query) use ($user) {
+            $query->where('user_id', $user->id)
+                ->orWhere('customer_email', $user->email);
+        })
             ->with(['items.product'])
             ->latest()
             ->get();

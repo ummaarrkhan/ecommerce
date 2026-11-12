@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ProductImage extends Model
@@ -35,6 +36,6 @@ class ProductImage extends Model
             return $this->image_path;
         }
 
-        return asset('storage/'.$this->image_path);
+        return Storage::disk(config('filesystems.default', 'public'))->url($this->image_path);
     }
 }

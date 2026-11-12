@@ -356,4 +356,39 @@ class CartControllerTest extends TestCase
         $this->assertSame(1, $variant->fresh()->stock_quantity);
         $this->assertSame($cart, session('cart'));
     }
+
+    public function test_variant_without_price_override_uses_product_base_price_in_cart(): void
+    {
+        $category = Category::create([
+            'name' => 'Knitwear',
+            'slug' => 'knitwear',
+            'is_active' => true,
+        ]);
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Cardigan',
+            'slug' => 'cardigan',
+            'sku' => 'CARD-01',
+            'price' => 120.00,
+            'stock_quantity' => 0,
+            'is_active' => true,
+        ]);
+        $variant = ProductVariant::create([
+            'product_id' => $product->id,
+            'size' => 'M',
+            'color' => 'Beige',
+            'price' => null,
+            'stock_quantity' => 5,
+            'is_active' => true,
+        ]);
+
+        $response = $this->postJson(route('store.cart.add', $product), [
+            'quantity' => 2,
+            'variant_id' => $variant->id,
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('count', 2)
+            ->assertJsonPath('subtotal', 240);
+    }
 }

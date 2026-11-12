@@ -129,16 +129,16 @@ class StripePaymentService
                 'mode' => 'stripe_live',
             ];
         } catch (Throwable $e) {
-            Log::warning('Stripe PaymentIntent verification warning: '.$e->getMessage(), [
+            Log::error('Stripe PaymentIntent verification failed: '.$e->getMessage(), [
                 'id' => $paymentIntentId,
+                'exception' => $e,
             ]);
 
-            // Allow graceful fallback for test IDs
             return [
                 'id' => $paymentIntentId,
-                'status' => 'succeeded',
-                'paid' => true,
-                'mode' => 'fallback',
+                'status' => 'failed',
+                'paid' => false,
+                'mode' => 'error',
             ];
         }
     }

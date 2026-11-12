@@ -9,19 +9,20 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Services\CartService;
 use App\Services\StripePaymentService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class CheckoutController extends Controller
 {
     protected $cartService;
+
     protected $stripeService;
 
     public function __construct(CartService $cartService, StripePaymentService $stripeService)
@@ -57,7 +58,7 @@ class CheckoutController extends Controller
         $hasUnavailableProduct = false;
 
         foreach ($items as $item) {
-            if (!$item['is_available']) {
+            if (! $item['is_available']) {
                 $hasUnavailableProduct = true;
                 break;
             }
@@ -137,7 +138,7 @@ class CheckoutController extends Controller
 
         } catch (\Throwable $e) {
             return response()->json([
-                'message' => 'Failed to initialize payment gateway: ' . $e->getMessage(),
+                'message' => 'Failed to initialize payment gateway: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -187,7 +188,7 @@ class CheckoutController extends Controller
                     ->lockForUpdate()
                     ->first();
 
-                if (!$product || !$product->is_active) {
+                if (! $product || ! $product->is_active) {
                     throw ValidationException::withMessages([
                         'cart' => 'A product in your cart is no longer available. Please review your cart.',
                     ]);
@@ -204,7 +205,7 @@ class CheckoutController extends Controller
                         ->lockForUpdate()
                         ->first();
 
-                    if (!$variant) {
+                    if (! $variant) {
                         throw ValidationException::withMessages([
                             'cart' => "A selected option for {$product->name} is no longer available. Please review your cart.",
                         ]);
@@ -293,28 +294,34 @@ class CheckoutController extends Controller
 
                 $intentId = $validated['stripe_payment_intent_id'] ?? null;
 
-                if ($intentId) {
+                if ($this->stripeService->isConfigured() && ! app()->environment('testing')) {
+                    if (! $intentId) {
+                        throw ValidationException::withMessages([
+                            'stripe_payment_intent_id' => 'Payment authorization failed. Please complete card details and try again.',
+                        ]);
+                    }
 
                     $verification = $this->stripeService->verifyPaymentIntent($intentId);
 
-                    if ($verification['paid']) {
-                        $paymentStatus = 'paid';
+                    if (! $verification['paid']) {
+                        throw ValidationException::withMessages([
+                            'stripe_payment_intent_id' => 'Card payment has not been confirmed. Please try again.',
+                        ]);
                     }
 
-                    $paymentReference = $verification['id'];
-
-                } else {
-
                     $paymentStatus = 'paid';
-
-                    $paymentReference = 'ch_' . Str::lower(Str::random(18));
+                    $paymentReference = $verification['id'];
+                } else {
+                    // Test simulation mode when live Stripe keys are not configured or running in testing environment
+                    $paymentStatus = 'paid';
+                    $paymentReference = $intentId ?: 'ch_sim_'.Str::lower(Str::random(18));
                 }
 
             } elseif ($paymentMethod == 'bank_transfer') {
 
                 $paymentStatus = 'unpaid';
 
-                $paymentReference = 'wire_' . Str::upper(Str::random(10));
+                $paymentReference = 'wire_'.Str::upper(Str::random(10));
             }
 
             // Get customer email
@@ -327,7 +334,7 @@ class CheckoutController extends Controller
             // Create order
             $order = Order::create([
                 'user_id' => $request->user() ? $request->user()->id : null,
-                'order_number' => 'ORD-' . Str::upper(Str::random(12)),
+                'order_number' => 'ORD-'.Str::upper(Str::random(12)),
                 'customer_name' => $validated['customer_name'],
                 'customer_email' => $customerEmail,
                 'customer_phone' => $validated['customer_phone'],
@@ -362,7 +369,7 @@ class CheckoutController extends Controller
 
             Log::warning(
                 "Failed to dispatch order confirmation email for order #{$order->order_number}: "
-                . $e->getMessage()
+                .$e->getMessage()
             );
         }
 

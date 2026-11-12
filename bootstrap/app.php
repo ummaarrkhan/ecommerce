@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Middleware\PermissionMiddleware;
 use Spatie\Permission\Middleware\RoleMiddleware;
 
-return Application::configure(basePath: dirname(__DIR__))
+$app = Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
@@ -22,6 +22,15 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
+
+        $middleware->trustProxies(
+            at: '*',
+            headers: Request::HEADER_X_FORWARDED_FOR |
+                     Request::HEADER_X_FORWARDED_HOST |
+                     Request::HEADER_X_FORWARDED_PORT |
+                     Request::HEADER_X_FORWARDED_PROTO
+        );
+
         $middleware->alias([
             'role' => RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,
@@ -33,3 +42,9 @@ return Application::configure(basePath: dirname(__DIR__))
         );
     })
     ->create();
+
+if ($storagePath = env('APP_STORAGE')) {
+    $app->useStoragePath($storagePath);
+}
+
+return $app;

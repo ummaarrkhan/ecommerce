@@ -1,0 +1,15 @@
+.git
+.github
+.claude
+.kiro
+tests
+node_modules
+ecommerce_store_full.sql
+*.lnk
+Dockerfile*
+Caddyfile
+.phpunit.result.cache
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
