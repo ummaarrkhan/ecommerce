@@ -32,13 +32,29 @@
             <p class="text-muted small mt-1 mb-0">Placed on {{ $order->created_at->format('l, F d, Y • h:i A') }}</p>
         </div>
 
-        <div class="d-flex gap-2">
+        <div class="d-flex align-items-center gap-2">
             <a href="{{ route('admin.orders.invoice', $order) }}" target="_blank" class="btn btn-dark btn-store-sm">
                 <i class="bi bi-printer me-1"></i> Print / Save Invoice
             </a>
             <a href="{{ route('store.checkout.success', $order->order_number) }}" target="_blank" class="btn btn-store-outline btn-store-sm">
                 <i class="bi bi-eye me-1"></i> Customer View
             </a>
+            @php
+                $isDeletable = in_array(strtolower($order->status), ['cancelled', 'completed', 'pending']);
+            @endphp
+            @if ($isDeletable)
+                <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to permanently delete order #{{ $order->order_number }}? This cannot be undone.');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-outline-danger btn-store-sm" title="Delete Order">
+                        <i class="bi bi-trash3 me-1"></i> Delete Order
+                    </button>
+                </form>
+            @else
+                <button type="button" class="btn btn-light border btn-store-sm text-muted opacity-50" title="Cannot delete order while status is '{{ ucfirst($order->status) }}'. Cancel order first." disabled>
+                    <i class="bi bi-trash3 me-1"></i> Delete Order
+                </button>
+            @endif
         </div>
     </div>
 </div>

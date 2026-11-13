@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Mail\OrderStatusUpdatedMail;
 use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
@@ -155,5 +157,55 @@ class OrderController extends Controller
 
         return redirect()->route('admin.orders.show', $order)
             ->with('success', 'Fulfillment and tracking details updated successfully.');
+    }
+
+    /**
+     * Delete an individual order based on its status.
+     * Active orders in fulfillment (processing, shipped) cannot be deleted.
+     */
+    public function destroy(Order $order): RedirectResponse
+    {
+        $deletableStatuses = ['cancelled', 'completed', 'pending'];
+
+        if (! in_array(strtolower($order->status), $deletableStatuses, true)) {
+            return redirect()->back()
+                ->with('error', "Cannot delete order #{$order->order_number} while its status is '{$order->status}'. Active orders (processing, shipped) must be cancelled first before deleting.");
+        }
+
+        $orderNumber = $order->order_number;
+
+        DB::transaction(function () use ($order): void {
+            $order->items()->delete();
+            $order->delete();
+        });
+
+        return redirect()->route('admin.orders.index')
+            ->with('success', "Order #{$orderNumber} has been deleted successfully.");
+    }
+
+    /**
+     * Delete orders in bulk based on a selected status.
+     */
+    public function destroyByStatus(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'status' => ['required', 'string', 'in:cancelled,completed,pending'],
+        ]);
+
+        $status = strtolower($validated['status']);
+        $deletedCount = 0;
+
+        DB::transaction(function () use ($status, &$deletedCount): void {
+            $orders = Order::where('status', $status)->get();
+            $deletedCount = $orders->count();
+
+            foreach ($orders as $order) {
+                $order->items()->delete();
+                $order->delete();
+            }
+        });
+
+        return redirect()->route('admin.orders.index')
+            ->with('success', "Successfully deleted {$deletedCount} order(s) with status '{$status}'.");
     }
 }

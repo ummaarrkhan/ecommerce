@@ -19,8 +19,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:super-admin|ad
         Route::resource('products', ProductController::class);
         Route::get('/orders', [OrderController::class, 'index'])
             ->name('orders.index');
+        Route::delete('/orders/by-status', [OrderController::class, 'destroyByStatus'])
+            ->name('orders.destroyByStatus');
         Route::get('/orders/{order}', [OrderController::class, 'show'])
             ->name('orders.show');
+        Route::delete('/orders/{order}', [OrderController::class, 'destroy'])
+            ->name('orders.destroy');
         Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])
             ->name('orders.updateStatus');
         Route::patch('/orders/{order}/payment-status', [OrderController::class, 'updatePaymentStatus'])
