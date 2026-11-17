@@ -1,0 +1,305 @@
+/* ==========================================================================
+   storefront-motion.css
+   Load AFTER theme.css. Targets the light theme classes used by home.blade.php.
+
+   Motion plan
+   1. One orchestrated moment: the hero sequence on page load.
+   2. Product cards ease in as they scroll into view (the content people came for).
+   3. Everything else answers an action: hover, add to cart, wishlist, filters.
+   ========================================================================== */
+
+:root {
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* --------------------------------------------------------------------------
+   1. Scroll progress bar
+   -------------------------------------------------------------------------- */
+
+.scroll-progress {
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 3px;
+    z-index: 2000;
+    pointer-events: none;
+    background: var(--store-accent, #2563eb);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+}
+
+/* --------------------------------------------------------------------------
+   2. Hero: the one orchestrated page-load sequence
+   -------------------------------------------------------------------------- */
+
+@keyframes motionRise {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes motionImageReveal {
+    from { clip-path: inset(0 0 100% 0 round 20px); }
+    to   { clip-path: inset(0 0 0 0 round 20px); }
+}
+
+@keyframes motionImageSettle {
+    from { transform: scale(1.18); }
+    to   { transform: scale(1); }
+}
+
+@keyframes motionCardIn {
+    from { opacity: 0; transform: translateY(16px) scale(0.96); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes motionSparkle {
+    0%, 100% { transform: scale(1) rotate(0); }
+    50%      { transform: scale(1.25) rotate(12deg); }
+}
+
+/* Left column: badge, title, lead, buttons, stats rise in one after another */
+.hero-section .col-lg-6:first-child > * {
+    opacity: 0;
+    animation: motionRise 0.9s var(--ease-out-expo) forwards;
+}
+.hero-section .col-lg-6:first-child > :nth-child(1) { animation-delay: 0.05s; }
+.hero-section .col-lg-6:first-child > :nth-child(2) { animation-delay: 0.15s; }
+.hero-section .col-lg-6:first-child > :nth-child(3) { animation-delay: 0.28s; }
+.hero-section .col-lg-6:first-child > :nth-child(4) { animation-delay: 0.4s; }
+.hero-section .col-lg-6:first-child > :nth-child(5) { animation-delay: 0.52s; }
+
+/* Image wipes open, and the photo settles from a slight zoom */
+.hero-image-wrapper {
+    animation: motionImageReveal 1.3s var(--ease-out-expo) 0.15s both;
+}
+.hero-image-wrapper img {
+    animation: motionImageSettle 1.8s var(--ease-out-expo) 0.15s backwards;
+}
+
+/* Floating card arrives last */
+.hero-floating-card {
+    animation: motionCardIn 0.8s var(--ease-spring) 1s both;
+}
+
+/* The title highlight drifts slowly through the gradient */
+.hero-title .highlight {
+    background: linear-gradient(110deg, #2563eb 0%, #7c3aed 35%, #0f172a 70%, #2563eb 100%);
+    background-size: 250% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: motionGradient 9s ease-in-out infinite alternate;
+}
+
+@keyframes motionGradient {
+    from { background-position: 0% 50%; }
+    to   { background-position: 100% 50%; }
+}
+
+.hero-badge .bi-stars {
+    display: inline-block;
+    animation: motionSparkle 1.2s ease-in-out 1.2s 2;
+}
+
+/* --------------------------------------------------------------------------
+   3. Product cards: scroll-in (class names added by storefront-motion.js)
+   -------------------------------------------------------------------------- */
+
+[data-reveal] {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+        opacity 0.7s var(--ease-out-expo),
+        transform 0.7s var(--ease-out-expo);
+    transition-delay: var(--reveal-delay, 0ms);
+}
+
+[data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+/* Images fade in once decoded, over a quiet skeleton */
+@keyframes motionShimmer {
+    from { background-position: 150% 0; }
+    to   { background-position: -50% 0; }
+}
+
+.product-card-img-wrapper[data-skeleton] {
+    background-image: linear-gradient(110deg, #f1f5f9 30%, #ffffff 50%, #f1f5f9 70%);
+    background-size: 200% 100%;
+    animation: motionShimmer 1.4s linear infinite;
+}
+
+img[data-img-fade] {
+    opacity: 0;
+    transition: opacity 0.6s ease, transform 0.4s ease;
+}
+
+img[data-img-fade].is-loaded {
+    opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   4. Hover and press feedback
+   -------------------------------------------------------------------------- */
+
+/* Primary button: light sweep on hover */
+.btn-store-primary,
+.btn-store-accent {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.btn-store-primary::after,
+.btn-store-accent::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.28) 50%, transparent 65%);
+    transform: translateX(-130%);
+    transition: transform 0.8s var(--ease-out-expo);
+}
+
+.btn-store-primary:hover::after,
+.btn-store-accent:hover::after {
+    transform: translateX(130%);
+}
+
+.btn-store-primary:active,
+.btn-store-accent:active,
+.btn-store-outline:active {
+    transform: scale(0.97);
+}
+
+/* Arrow icons move in the direction they point */
+.btn-store-primary .bi,
+.btn-store-outline .bi {
+    display: inline-block;
+    transition: transform 0.3s var(--ease-out-expo);
+}
+.btn-store-primary:hover .bi-arrow-down-short { transform: translateY(3px); }
+.btn-store-outline:hover .bi-arrow-right      { transform: translateX(4px); }
+
+/* Perks strip */
+.feature-icon-box {
+    transition: transform 0.35s var(--ease-spring), background-color 0.2s ease, color 0.2s ease;
+}
+.feature-item:hover .feature-icon-box {
+    transform: translateY(-3px) rotate(-6deg);
+    background-color: var(--store-primary);
+    color: #fff;
+}
+
+/* Category pills */
+.category-pill {
+    transition: transform 0.25s var(--ease-out-expo), background-color 0.2s ease, color 0.2s ease,
+                border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.category-pill:hover  { transform: translateY(-2px); }
+.category-pill:active { transform: scale(0.96); }
+
+@keyframes motionPillIn {
+    from { transform: scale(0.92); }
+    to   { transform: scale(1); }
+}
+.category-pill.active {
+    animation: motionPillIn 0.45s var(--ease-spring);
+}
+
+/* Product card: the add button reacts when the card is hovered */
+.product-card .btn-card-add {
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease,
+                transform 0.3s var(--ease-spring);
+}
+.product-card:hover .btn-card-add {
+    background-color: var(--store-primary);
+    border-color: var(--store-primary);
+    color: #fff;
+    transform: scale(1.08);
+}
+.product-card .btn-card-add:active { transform: scale(0.92); }
+
+/* Wishlist heart: tucked away until the card is hovered (always visible on touch) */
+@media (hover: hover) {
+    .btn-card-wishlist {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.9);
+    }
+    .product-card:hover .btn-card-wishlist,
+    .btn-card-wishlist:focus-visible,
+    .btn-card-wishlist.active {
+        opacity: 1;
+        transform: none;
+    }
+    .product-card .btn-card-wishlist:hover {
+        transform: scale(1.1);
+    }
+}
+
+@keyframes motionHeartPop {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.45); }
+    100% { transform: scale(1); }
+}
+.btn-card-wishlist.active i {
+    animation: motionHeartPop 0.55s var(--ease-spring);
+}
+
+/* --------------------------------------------------------------------------
+   5. Add to cart confirmation
+   -------------------------------------------------------------------------- */
+
+@keyframes motionCartBump {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}
+.store-cart-count.is-bumping {
+    animation: motionCartBump 0.5s var(--ease-spring);
+}
+
+.btn-card-add.is-added,
+.product-card:hover .btn-card-add.is-added {
+    background-color: var(--store-success);
+    border-color: var(--store-success);
+    color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   6. Navbar hides on scroll down, returns on scroll up
+   -------------------------------------------------------------------------- */
+
+.store-navbar {
+    transition: transform 0.4s var(--ease-out-expo), box-shadow 0.25s ease;
+}
+.store-navbar.is-hidden {
+    transform: translateY(-100%);
+}
+
+/* --------------------------------------------------------------------------
+   7. Respect reduced motion
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-delay: 0ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        transition-delay: 0ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    [data-reveal],
+    img[data-img-fade] {
+        opacity: 1;
+        transform: none;
+    }
+
+    .scroll-progress { display: none; }
+}

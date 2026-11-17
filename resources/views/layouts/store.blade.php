@@ -16,6 +16,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
+    <link rel="stylesheet" href="{{ asset('css/storefront-motion.css') }}">
     <!-- Unified Custom Design System -->
     <link rel="stylesheet" href="{{ asset('css/theme.css') }}?v={{ @filemtime(public_path('css/theme.css')) ?: '1.0' }}">
 
@@ -711,6 +712,12 @@
             });
         })();
     </script>
+    <script src="{{ asset('js/storefront-motion.js') }}" defer></script>
+    <script src="{{ asset('js/storefront-fly-to-cart.js') }}" defer></script>
+    <script src="{{ asset('js/storefront-cart-drawer.js') }}" defer></script>
+    @push('scripts')
+<script src="{{ asset('js/storefront-sticky-cart.js') }}" defer></script>
+@endpush
 
     @stack('scripts')
 </body>

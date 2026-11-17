@@ -1,5 +1,7 @@
 @extends('layouts.store')
 
+<link rel="stylesheet" href="{{ asset('css/storefront-motion.css') }}">
+
 @section('title', config('app.name', 'MONO') . ' — Timeless Style & Curated Essentials')
 
 @section('content')
@@ -464,4 +466,6 @@
             </div>
         </div>
     </section>
+
 @endsection
+
